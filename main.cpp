@@ -5,7 +5,7 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-	ifstream fi("/home/andrearch/Documents/Matlab/segnali/dataTest.csv");
+	ifstream fi("dataTest.csv");
 
 	vector<double> inp;
 	double v;
@@ -13,17 +13,17 @@ int main(int argc, char **argv)
 		inp.push_back(v);
 
 
-	unsigned N=600;
+	int N=600;
 	Rls rls(N+1,1e14,1);
 
-	unsigned k0=0, k1=N;
+	int k0=0, k1=N;
 
 	double *S_k= new double[N+1];
 
 	while(k1<inp.size())
 	{
 		double y_k=inp[k1];
-		for(unsigned i=0;i<N;i++)
+		for(int i=0;i<N;i++)
 		{
 			S_k[i]=inp[k1-i-1];
 		}

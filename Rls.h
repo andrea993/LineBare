@@ -11,7 +11,7 @@ class Rls
 public:
 	Rls(): N(0),lambda(1),X(nullptr),cov(nullptr) {}
 
-	Rls(unsigned N,double sigma2,double lambda): X(nullptr),cov(nullptr)
+	Rls(int N,double sigma2,double lambda): X(nullptr),cov(nullptr)
 	{
 		Reset(N,sigma2,lambda);
 	}
@@ -21,7 +21,7 @@ public:
 		freeAll();
 	}
 
-	void Reset(unsigned N, double sigma2,double lambda)
+	void Reset(int N, double sigma2,double lambda)
 	{
 		freeAll();
 		this->N=N;
@@ -31,7 +31,7 @@ public:
 		fill(X,X+N,0);
 
 		cov=new double*[N];
-		for (unsigned i=0; i<N; i++)
+		for (int i=0; i<N; i++)
 		{
 			cov[i]=new double[N];
 			fill(cov[i],cov[i]+N,0);
@@ -42,7 +42,7 @@ public:
 	void Step(const double S[], double yd);
 
 	double* getX() const { return X; }
-	unsigned getN() const { return N; }
+	int getN() const { return N; }
 	double getLambda() const { return lambda; }
 
 
@@ -51,7 +51,7 @@ public:
 
 private:
 
-	unsigned N;
+	int N;
 	double lambda;
 	double *X;
 	double **cov;
@@ -67,7 +67,7 @@ private:
 
 		if(cov)
 		{
-			for(unsigned i=0;i<N;i++)
+			for(int i=0;i<N;i++)
 				if(cov[i])
 					delete[] cov[i];
 
