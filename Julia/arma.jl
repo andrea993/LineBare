@@ -9,6 +9,11 @@ data_in = readdlm("data.csv",Float64) # Set me
 Npoles = 2 # Set me
 Nzeros = 0 # Set me
 
+if Nzeros >= Npoles
+    println("ERROR: No strictly proper transfer function")
+    exit(-1);
+end
+
 t_raw = data_in[:,1]
 y_raw = data_in[:,2]
 u_raw = data_in[:,3]
@@ -55,4 +60,25 @@ let x=Float64(0)
 end
 
 plot(t,[y ys])
-print("b: $b\na: $a")
+println("b: $b\na: $a")
+
+az=reverse(a) #converts delays to anticipations
+bz=reverse(b)
+
+#State space realization Frobenius form
+Az=vcat(hcat(zeros(Npoles-1,1),I),-az[1:end-1]')
+Bz=[zeros(Npoles-1) ; 1 ]
+Cz=[zeros(1, Npoles - length(bz)) bz']
+
+ys2=zeros(length(y))
+let x=zeros(Npoles,1)
+    for i=1:length(y)
+        x=Az*x+Bz*u[i]
+        global ys2[i]=(Cz*x)[1]
+    end
+end
+
+err=sum((ys2-ys).^2)
+
+
+println("Az: $Az\nBz: $Bz\nCz: $Cz")
