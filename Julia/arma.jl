@@ -15,10 +15,8 @@ u_raw = data_in[:,3]
 
 dt = min(diff(t_raw)...)
 t = collect(t_raw[1]:dt:t_raw[end])
-y_int = interpolate((t_raw,),y_raw,Gridded(Linear()))
-y = y_int[t]
-u_int = interpolate((t_raw,),u_raw,Gridded(Linear()))
-u = u_int[t]
+y = interpolate((t_raw,),y_raw,Gridded(Linear()))(t)
+u = interpolate((t_raw,),u_raw,Gridded(Linear()))(t)
 L=length(t)
 
 A=Array{Float64}(undef,L,Npoles + Nzeros + 1)
@@ -57,6 +55,4 @@ let x=Float64(0)
 end
 
 plot(t,[y ys])
-
-        
-
+print("b: $b\na: $a")
