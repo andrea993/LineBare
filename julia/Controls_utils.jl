@@ -111,8 +111,6 @@ function LQR_area_method(S::StateSpace, Umax, X_lin, dt)
     Q[diagind(Q)]=(Npoles == 2 ? [WX WD WI] : [WX WI])
     R=WU
 
-    @show Q
-
     if !all(.!isinf.(Q))
         println("ERROR: X_lin too short")
         exit(-1)
