@@ -87,8 +87,9 @@ function augmentSis(S::StateSpace)
         )
 end
 
-function LQR_area_method(S::StateSpace, Umax, X_lin)
+function LQR_area_method(S::StateSpace, Umax, X_lin, dt)
     Umax*=0.8
+    Npoles=length(S.B)-1
     WX=0; WD=0; WI=0 ; WU=0 ; t_lin = 0
     let x=zeros(Npoles+1,1), xarea=0, ixarea=0, sxarea=0, s_lin=0, i_lin=0
         while x[1] <= X_lin
@@ -99,18 +100,27 @@ function LQR_area_method(S::StateSpace, Umax, X_lin)
             ixarea += dt*i_lin
             length(x) > 2 && (s_lin = x[2] ; sxarea += dt*s_lin)
         end
+
         WX=1/(t_lin*X_lin-xarea)^2
-        WD=1/(t_lin*s_lin-xarea)^2
-        WI=1/(t_lin*i_lin-xarea)^2
+        WD=1/(t_lin*s_lin-sxarea)^2
+        WI=1/(t_lin*i_lin-ixarea)^2
         WU=1/(Umax*t_lin)^2
     end
 
-    Q=zeros(3,3)
-    Q[diagind(Q)]=[WX WD WI]
+    Q=zeros(size(S.A))
+    Q[diagind(Q)]=(Npoles == 2 ? [WX WD WI] : [WX WI])
     R=WU
+
+    @show Q
+
+    if !all(.!isinf.(Q))
+        println("ERROR: X_lin too short")
+        exit(-1)
+    end
 
     P=dare(S.A,S.B,R,Q)
     K=LQRgain(S.A,S.B,P,R)
 
     return [K , t_lin]
+
 end
